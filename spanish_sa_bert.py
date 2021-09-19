@@ -22,12 +22,15 @@ def convert_df(df):
  return df.to_csv().encode('utf-8')
 
 def sentimiento(text):
-    result = nlp(text)[0]
-    x = int(result['label'][:1])
-    if x in conditions.keys():
-        return conditions[x], result['score']
-    else:
-        return false
+    try:
+        result = nlp(text)[0]
+        x = int(result['label'][:1])
+        if x in conditions.keys():
+            return conditions[x], result['score']
+        else:
+            return None
+    except:
+        return None
 
 st.title('Coke.ai')
 st.title('Análisis de sentimiento ...')
