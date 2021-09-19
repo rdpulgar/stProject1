@@ -1,7 +1,9 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 import pandas as pd
 import streamlit as st
-from tqdm import tqdm
+import time
+from tqdm.notebook import tqdm
+tqdm.pandas()
 
 tokenizer = AutoTokenizer.from_pretrained("nlptown/bert-base-multilingual-uncased-sentiment")  #sagorsarker/codeswitch-spaeng-sentiment-analysis-lince
 model = AutoModelForSequenceClassification.from_pretrained("nlptown/bert-base-multilingual-uncased-sentiment") # "sagorsarker/codeswitch-spaeng-sentiment-analysis-lince"
@@ -21,16 +23,18 @@ def convert_df(df):
     # Cache the conversion to prevent computation on every rerun
  return df.to_csv().encode('utf-8')
 
+i = 0
+
 def sentimiento(text):
     try:
         result = nlp(text)[0]
         x = int(result['label'][:1])
         if x in conditions.keys():
-            return conditions[x], result['score']
+            return conditions[x], round(result['score'],4)
         else:
-            return False, False
+            return "_TextTooLong", -1
     except:
-        return False, False
+        return "_TextTooLong", -1
 
 st.title('Coke.ai')
 st.title('Análisis de sentimiento ...')
@@ -54,33 +58,33 @@ else:
 uploaded_file = st.file_uploader("O bien puede seleccionar un archivo CSV para procesar múltiples párrafos (se procesará columna 'text')",type=['csv'])
 if uploaded_file is not None:
     if st.button("Procesar Archivo CSV"):
-        data = pd.read_csv(uploaded_file,nrows=10000)
+        data = pd.read_csv(uploaded_file)
         st.success("Procesando CSV ..")
         data[data['text'].str.strip().astype(bool)]
         #indexes = data[data.text_len <  30].index
         #data = data.drop(indexes)
         data['text'] = data['text'].astype(str)
-        sentences = data.text.tolist()
-        i=0
-        j=0
         total_reg = len(data)
-        my_bar = st.progress(0)
-        for sentence in tqdm(sentences):
-            label, score = sentimiento(sentence)
-            if label:
-                data.loc[data.index[i], 's5'] = round(score, 4)
-                data.loc[data.index[i], 's5_label'] = label
-            else:
-                data.loc[data.index[i], 's5'] = -1
-                data.loc[data.index[i], 's5_label'] = "TooLong"
-                j=j+1
-            i=i+1
-            my_bar.progress(i/total_reg)
+        #my_bar = st.progress(0)
+        #i = 0
+        t0 = time.time()
+        with st.spinner('Wait for it...'):
+           g = lambda x: pd.Series(sentimiento(x.text))
+           data[['label', 'score']] = data.apply(g, axis=1)
+        st.success(f'Procesado con éxito en {time.time() - t0:.0f} seg')
+        #sentences = data.text.tolist()
+        #i=0
+        #
+        #
+        #for sentence in sentences: # tqdm(sentences):
+        #    label, score = sentimiento(sentence)
+        #    data.loc[data.index[i], 's5'] = round(score, 4)
+        #    data.loc[data.index[i], 's5_label'] = label
+        #    i=i+1
+        #    my_bar.progress(i/total_reg)
         #indexes = data[data.sentiment >=  0].index
         #data = data.drop(indexes)
         #data.to_csv("/Users/RDPulgar/Google Drive/AI/cv/P095_HT/_cokeai_results.csv")
-        st.success("Procesado con éxito ..")
-        print(f"Missed: {j}")
         csv = convert_df(data)
         if st.download_button(label="Presione para descargar archivo procesado", data=csv, file_name='_cokeai_results.csv', mime='text/csv'):
             st.success("Descargado con éxito ..")
