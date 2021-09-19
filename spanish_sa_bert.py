@@ -75,7 +75,7 @@ if uploaded_file is not None:
             my_bar.progress(i/total_reg)
         #indexes = data[data.sentiment >=  0].index
         #data = data.drop(indexes)
-        data.to_csv("/Users/RDPulgar/Google Drive/AI/cv/P095_HT/_cokeai_results.csv")
+        #data.to_csv("/Users/RDPulgar/Google Drive/AI/cv/P095_HT/_cokeai_results.csv")
         st.success("Procesado con éxito ..")
         print(f"Missed: {j}")
         csv = convert_df(data)
