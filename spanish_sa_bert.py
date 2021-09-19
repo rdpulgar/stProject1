@@ -54,7 +54,7 @@ else:
 uploaded_file = st.file_uploader("O bien puede seleccionar un archivo CSV para procesar múltiples párrafos (se procesará columna 'text')",type=['csv'])
 if uploaded_file is not None:
     if st.button("Procesar Archivo CSV"):
-        data = pd.read_csv(uploaded_file,nrows=2000)
+        data = pd.read_csv(uploaded_file,nrows=10000)
         st.success("Procesando CSV ..")
         data[data['text'].str.strip().astype(bool)]
         #indexes = data[data.text_len <  30].index
