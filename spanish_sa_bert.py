@@ -28,9 +28,9 @@ def sentimiento(text):
         if x in conditions.keys():
             return conditions[x], result['score']
         else:
-            return None
+            return False, False
     except:
-        return None
+        return False, False
 
 st.title('Coke.ai')
 st.title('Análisis de sentimiento ...')
