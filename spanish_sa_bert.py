@@ -2,7 +2,6 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipe
 import pandas as pd
 import streamlit as st
 from tqdm import tqdm
-import time
 
 tokenizer = AutoTokenizer.from_pretrained("nlptown/bert-base-multilingual-uncased-sentiment")  #sagorsarker/codeswitch-spaeng-sentiment-analysis-lince
 model = AutoModelForSequenceClassification.from_pretrained("nlptown/bert-base-multilingual-uncased-sentiment") # "sagorsarker/codeswitch-spaeng-sentiment-analysis-lince"
