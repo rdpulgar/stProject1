@@ -73,24 +73,23 @@ def main():
 
 
 def sentimiento(text):
-    #try:
+    try:
+        conditions = {
+            1: 'Muy Malo',
+            2: 'Malo',
+            3: 'Neutro',
+            4: 'Bueno',
+            5: 'Muy bueno'
+        }
 
-    conditions = {
-        1: 'Muy Malo',
-        2: 'Malo',
-        3: 'Neutro',
-        4: 'Bueno',
-        5: 'Muy bueno'
-    }
-
-    result = nlp(text)[0]
-    x = int(result['label'][:1])
-    if x in conditions.keys():
-        return conditions[x], round(result['score'],4)
-    else:
+        result = nlp(text)[0]
+        x = int(result['label'][:1])
+        if x in conditions.keys():
+            return conditions[x], round(result['score'],4)
+        else:
+            return "_TextTooLong", -1
+    except:
         return "_TextTooLong", -1
-    #except:
-    #    return "_TextTooLong", -1
 
 @st.cache
 def convert_df(df):
